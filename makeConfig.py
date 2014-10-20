@@ -80,28 +80,34 @@ def configure(*args):
                 ).format(gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
     f.writelines(filetext)
     f.close()
+
+#     gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr
+#     "test.gcode",2,3,4,5,6.1,7,8,9,10,11,12,0
     
     import pulse
-    pulse.writeGCODE()
+    pulse.writeGCODE(gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
     
     configPath      = initConfigDir(filenameStr)
-    try:
-        f = open(configPath + ".py",'w')
-    except:
-        print("Error-open")
-        error.set("Cannot open config.py")
+    f = open("config.py",'r')
+    g = open(configPath + "-CONFIG.py",'w')
+    for line in f:
+        g.writelines(line)
+    f.close()
+    g.close()
     
     gcodePath       = initGcodeDir(filenameStr)
-    g = open(gcodeNameStr,'r')
-    h = open(gcodePath+".gcode",'w')
-    for line in g:
-        h.writelines(line)
+    h = open(gcodeNameStr,'r')
+    i = open(gcodePath+".gcode",'w')
+    for line in h:
+        i.writelines(line)
      
-    g.close()
     h.close()
+    i.close()
     
-#     filenameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr
-#     "test.gcode",2,3,4,5,6.1,7,8,9,10,11,12,0
+    os.remove("config.py")
+    os.remove(gcodeNameStr)
+
+
     return
 
 

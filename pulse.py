@@ -1,6 +1,7 @@
 import config
 import writefile
 
+
 ## Parameters
 
 #File
@@ -28,9 +29,9 @@ def guiGlobVars(args):
 	#File
 	filename = args[0]
 	global f
+	f.close()
 	f = open(filename,'w')
-	f.writelines("hello world!")
-	
+ 	
 	#Laser Parameters
 	global laserPower
 	laserPower 		= float(args[1])
@@ -46,7 +47,7 @@ def guiGlobVars(args):
 	pauseTime 		= int(args[6])
 	global feedRate
 	feedRate        = int(args[7])
-	
+ 	
 	# Rectangle size properties
 	global rectLength
 	rectLength 	= int(args[8])
@@ -56,11 +57,10 @@ def guiGlobVars(args):
 	spaceSmall 	= int(args[10])
 	global hex_pack
 	hex_pack	= float(args[11])
-	
+ 	
 	# Other Parameters
 	global relative
-	relative   	= int(args[12])
-	
+	relative   	= int(args[12])	
 	
 def hex_pattern(hex_pack):
 	x_dist = "{:.3f}".format(hex_pack)
@@ -102,7 +102,7 @@ def writeGCODE(*args):
 	if (args): guiGlobVars(args)
 	
 	## Write GCODE file
-	writefile.header()
+	writefile.header(f)
 	
 	f.writelines("M3 S0\n") ## Laser Off
 	f.writelines("G28\n") ## Home axes.
@@ -130,7 +130,7 @@ def writeGCODE(*args):
 	x_grid = 0
 	y_grid += rectWidth + spaceSmall
 	
-	writefile.closefile()
+	writefile.closefile(f)
 
 def main():
 	writeGCODE()
