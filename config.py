@@ -1,5 +1,5 @@
 #File
-fname = '5D1.gcode'
+fname = 'test-final2.gcode'
 f=open(fname,'w')
 
 #Laser Parameters
@@ -13,7 +13,7 @@ feedRate       = 500 #movement speed
 
 # Rectangle size properties
 rectLength     = 40 #mm; x-direction
-rectWidth      = 40 #mm; y-direction
+rectWidth      = 45 #mm; y-direction
 spaceSmall     = 3 #mm; space between rectangles
 hexLength      = 0.250 #mm
 

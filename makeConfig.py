@@ -1,15 +1,40 @@
 from tkinter import *
 from tkinter import ttk
 
-# Functions
-def configure(*args):
+from time import strftime, localtime
+import os
 
-    try:
-        f = open('config.py','w')
-    except:
-        print("Error-open")
-        error.set("Cannot open config.py")
+# Functions
+
+def dateName():
+    dateStr = strftime("%Y-%B-%d", localtime())
+    return dateStr
+
+def timeName():
+    timeStr = strftime("%I-%M-%S %p", localtime())
+    return timeStr
+
+def initConfigDir(filename):
+    dateStr = dateName()
+    timeStr = timeName()
     
+    dirPath = "./CONFIG/{0}".format(dateStr)
+    if not os.path.exists(dirPath): os.makedirs(dirPath)
+    
+    filePath = "{0}/{1} {2}".format(dirPath,timeStr,filename)
+    return filePath
+
+def initGcodeDir(filename):
+    dateStr = dateName()
+    timeStr = timeName()
+    
+    dirPath = "./GCODE/{0}".format(dateStr)
+    if not os.path.exists(dirPath): os.makedirs(dirPath)
+    
+    filePath = "{0}/{1} {2}".format(dirPath,timeStr,filename)
+    return filePath
+
+def configure(*args):
     
     #File 
     filenameStr = str(filename.get())
@@ -25,6 +50,14 @@ def configure(*args):
     spaceStr    = str(3)
     hexPackStr  = "{:.3f}".format(float(hexPack.get()))
     relStr      = str(0)
+    
+    try:
+        f = open("config.py",'w')
+    except:
+        print("Error-open")
+        error.set("Cannot open config.py")
+    
+    gcodeNameStr = filenameStr + ".gcode"
     
     filetext = ("#File\n"
                 "fname = '{0}'\n"
@@ -44,17 +77,31 @@ def configure(*args):
                 "hexLength      = {11} #mm\n\n"
                 "#Other\n"
                 "relative       = {12} #1 for no starting x,y; 0 for using starting co-ordinates"
-                ).format(filenameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
+                ).format(gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
     f.writelines(filetext)
     f.close()
     
+    import pulse
+    pulse.writeGCODE()
+    
+    configPath      = initConfigDir(filenameStr)
+    try:
+        f = open(configPath + ".py",'w')
+    except:
+        print("Error-open")
+        error.set("Cannot open config.py")
+    
+    gcodePath       = initGcodeDir(filenameStr)
+    g = open(gcodeNameStr,'r')
+    h = open(gcodePath+".gcode",'w')
+    for line in g:
+        h.writelines(line)
+     
+    g.close()
+    h.close()
     
 #     filenameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr
 #     "test.gcode",2,3,4,5,6.1,7,8,9,10,11,12,0
-    
-    import pulse
-    
-    pulse.writeGCODE()
     return
 
 
