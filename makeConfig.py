@@ -18,10 +18,13 @@ def configure(*args):
     xStr        = str(x_start.get())
     yStr        = str(y_start.get())
     zStr        = "{:.1f}".format(110.4 - int(z_dist.get()))
+    pauseStr    = str(500)
     speedStr    = str(feedRate.get())
     lengthStr   = str(rectLength.get())
     widthStr    = str(rectWidth.get())
+    spaceStr    = str(3)
     hexPackStr  = "{:.3f}".format(float(hexPack.get()))
+    relStr      = str(0)
     
     filetext = ("#File\n"
                 "fname = '{0}'\n"
@@ -32,18 +35,22 @@ def configure(*args):
                 "x_start        = {3}\n"
                 "y_start        = {4}\n"
                 "z_start        = {5} #mm above home\n"
-                "pauseTime      = 500 #ms; time paused after movement before ablation\n"
-                "feedRate       = {6} #movement speed\n\n"
+                "pauseTime      = {6} #ms; time paused after movement before ablation\n"
+                "feedRate       = {7} #movement speed\n\n"
                 "# Rectangle size properties\n"
-                "rectLength     = {7} #mm; x-direction\n"
-                "rectWidth      = {8} #mm; y-direction\n"
-                "spaceSmall     = 1 #mm; space between rectangles\n"
-                "hexLength      = {9} #mm\n\n"
+                "rectLength     = {8} #mm; x-direction\n"
+                "rectWidth      = {9} #mm; y-direction\n"
+                "spaceSmall     = {10} #mm; space between rectangles\n"
+                "hexLength      = {11} #mm\n\n"
                 "#Other\n"
-                "relative       = 0 #1 for no starting x,y; 0 for using starting co-ordinates"
-                ).format(filenameStr,laserStr,dwellStr,xStr,yStr,zStr,speedStr,lengthStr,widthStr,hexPackStr)
+                "relative       = {12} #1 for no starting x,y; 0 for using starting co-ordinates"
+                ).format(filenameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
     f.writelines(filetext)
     f.close()
+    
+    
+#     filenameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr
+#     "test.gcode",2,3,4,5,6.1,7,8,9,10,11,12,0
     
     import pulse
     
@@ -64,7 +71,7 @@ paramFrame.grid(column=1,row=1,sticky=(N,W))
 paramFrame.columnconfigure(0, weight=4)
 paramFrame.rowconfigure(0, weight=4)
 
-# Intialize Variables to be used in the parameter frame
+# Initialize Variables to be used in the parameter frame
 laserPower  = StringVar()   # Laser Power
 dwellTime   = StringVar()   # Residence Time    
 z_dist      = StringVar()   # Focal Distance
@@ -112,7 +119,7 @@ positionFrame.grid(column=2,row=1,sticky=(N,W))
 positionFrame.columnconfigure(0, weight=4)
 positionFrame.rowconfigure(0, weight=4)
 
-# Intialize Variables to be used in the Position Frame
+# Initialize Variables to be used in the Position Frame
 x_start = StringVar()       # Initial X position
 y_start = StringVar()       # Initial Y position   
 rectLength = StringVar()    # Length of grid in x
@@ -154,7 +161,7 @@ fileFrame.grid(column=1,row=2,sticky=(N,W))
 fileFrame.columnconfigure(0, weight=4)
 fileFrame.rowconfigure(0, weight=10)
 
-# Intialize Variables to be used in the Filename Frame
+# Initialize Variables to be used in the Filename Frame
 filename = StringVar()
 
 # Label
@@ -191,4 +198,5 @@ error.set(" ")
 # Label for error frame
 ttk.Label(errorFrame, textvariable=error).grid(column=1,row=1,sticky=W)
 
+root.bind('<Return>', configure)
 root.mainloop()

@@ -1,21 +1,21 @@
 #File
-fname = '2.gcode'
+fname = '5D1.gcode'
 f=open(fname,'w')
 
 #Laser Parameters
-laserPower     = 1 #% max power
-dwellTime      = 1 #ms
-x_start        = 1
-y_start        = 1
-z_start        = 99.4 #mm above home
+laserPower     = 10 #% max power
+dwellTime      = 10 #ms
+x_start        = 403
+y_start        = 343
+z_start        = 110.4 #mm above home
 pauseTime      = 500 #ms; time paused after movement before ablation
-feedRate       = 1 #movement speed
+feedRate       = 500 #movement speed
 
 # Rectangle size properties
-rectLength     = 11 #mm; x-direction
-rectWidth      = 1 #mm; y-direction
-spaceSmall     = 1 #mm; space between rectangles
-hexLength      = 1.000 #mm
+rectLength     = 40 #mm; x-direction
+rectWidth      = 40 #mm; y-direction
+spaceSmall     = 3 #mm; space between rectangles
+hexLength      = 0.250 #mm
 
 #Other
 relative       = 0 #1 for no starting x,y; 0 for using starting co-ordinates

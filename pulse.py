@@ -24,6 +24,44 @@ hex_pack	= config.hexLength
 # Other Parameters
 relative   	= config.relative
 
+def guiGlobVars(args):
+	#File
+	filename = args[0]
+	global f
+	f = open(filename,'w')
+	f.writelines("hello world!")
+	
+	#Laser Parameters
+	global laserPower
+	laserPower 		= float(args[1])
+	global dwellTime
+	dwellTime     	= float(args[2])
+	global x_start
+	x_start			= float(args[3])
+	global y_start
+	y_start			= float(args[4])
+	global z_start
+	z_start			= float(args[5])
+	global pauseTime
+	pauseTime 		= int(args[6])
+	global feedRate
+	feedRate        = int(args[7])
+	
+	# Rectangle size properties
+	global rectLength
+	rectLength 	= int(args[8])
+	global rectWidth
+	rectWidth   = int(args[9])
+	global spaceSmall
+	spaceSmall 	= int(args[10])
+	global hex_pack
+	hex_pack	= float(args[11])
+	
+	# Other Parameters
+	global relative
+	relative   	= int(args[12])
+	
+	
 def hex_pattern(hex_pack):
 	x_dist = "{:.3f}".format(hex_pack)
 	y_dist = "{:.3f}".format(hex_pack * (3**0.5) / 2)
@@ -59,7 +97,10 @@ def gcode_rectangle(dwellTime, laserPower):
 	return totals
 	
 
-def writeGCODE():
+def writeGCODE(*args):
+	
+	if (args): guiGlobVars(args)
+	
 	## Write GCODE file
 	writefile.header()
 	
@@ -88,6 +129,8 @@ def writeGCODE():
 	gcode_move(x_move + x_grid, y_move - rectWidth - spaceSmall)
 	x_grid = 0
 	y_grid += rectWidth + spaceSmall
+	
+	writefile.closefile()
 
 def main():
 	writeGCODE()
