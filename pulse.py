@@ -25,6 +25,13 @@ hex_pack	= config.hexLength
 # Other Parameters
 relative   	= config.relative
 
+def hex_pattern(hex_pack):
+	global x_dist
+	x_dist = float("{:.3f}".format(hex_pack))
+	global y_dist
+	y_dist = float("{:.3f}".format(hex_pack * (3**0.5) / 2))
+	return
+
 def guiGlobVars(args):
 	#File
 	filename = args[0]
@@ -57,20 +64,12 @@ def guiGlobVars(args):
 	spaceSmall 	= int(args[10])
 	global hex_pack
 	hex_pack	= float(args[11])
+	
+	hex_pattern(hex_pack)
  	
 	# Other Parameters
 	global relative
 	relative   	= int(args[12])	
-	
-def hex_pattern(hex_pack):
-	x_dist = "{:.3f}".format(hex_pack)
-	y_dist = "{:.3f}".format(hex_pack * (3**0.5) / 2)
-	distances = [float(x_dist), float(y_dist)]
-	return distances
-
-distances = hex_pattern(hex_pack)
-x_dist = distances[0]
-y_dist = distances[1]
 
 def gcode_move(x_move, y_move):
 	f.writelines("G0 X" + str(x_move) + " Y" + str(y_move) + " F2000\n")
