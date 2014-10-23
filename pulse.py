@@ -32,44 +32,44 @@ def hex_pattern(hex_pack):
 	y_dist = float("{:.3f}".format(hex_pack * (3**0.5) / 2))
 	return
 
-def guiGlobVars(args):
+def guiGlobVars(kvarg):
 	#File
-	filename = args[0]
+	filename = kvarg['gcodeNameStr']
 	global f
 	f.close()
 	f = open(filename,'w')
- 	
+	
 	#Laser Parameters
 	global laserPower
-	laserPower 		= float(args[1])
+	laserPower 		= float(kvarg['laserStr'])
 	global dwellTime
-	dwellTime     	= float(args[2])
+	dwellTime     	= float(kvarg['dwellStr'])
 	global x_start
-	x_start			= float(args[3])
+	x_start			= int(kvarg['xStr'])
 	global y_start
-	y_start			= float(args[4])
+	y_start			= int(kvarg['yStr'])
 	global z_start
-	z_start			= float(args[5])
+	z_start			= float(kvarg['zStr'])
 	global pauseTime
-	pauseTime 		= int(args[6])
+	pauseTime 		= int(kvarg['pauseStr'])
 	global feedRate
-	feedRate        = int(args[7])
- 	
+	feedRate        = int(kvarg['speedStr'])
+	
 	# Rectangle size properties
 	global rectLength
-	rectLength 	= int(args[8])
+	rectLength 	= int(kvarg['lengthStr'])
 	global rectWidth
-	rectWidth   = int(args[9])
+	rectWidth   = int(kvarg['widthStr'])
 	global spaceSmall
-	spaceSmall 	= int(args[10])
+	spaceSmall 	= int(kvarg['spaceStr'])
 	global hex_pack
-	hex_pack	= float(args[11])
+	hex_pack	= float(kvarg['hexPackStr'])
 	
 	hex_pattern(hex_pack)
- 	
+	
 	# Other Parameters
 	global relative
-	relative   	= int(args[12])	
+	relative   	= int(kvarg['relStr'])	
 
 def gcode_move(x_move, y_move):
 	f.writelines("G0 X" + str(x_move) + " Y" + str(y_move) + " F2000\n")
@@ -96,19 +96,23 @@ def gcode_rectangle(dwellTime, laserPower):
 	return totals
 	
 
-def writeGCODE(*args):
+def writeGCODE(kvarg):
 	
-	if (args): guiGlobVars(args)
+	if (kvarg): guiGlobVars(kvarg)
 	
 	## Write GCODE file
 	writefile.header(f)
 	
 	f.writelines("M3 S0\n") ## Laser Off
-	f.writelines("G28\n") ## Home axes.
 	
-	if relative == 0:
-		f.writelines("G0 X" + str(x_start) + " Y" + str(y_start) + " F2000\n") # Move to x and y-axis start
+	
+	if relative == 1: 
+		f.writelines("G28\n") ## Home axes.
+	else: 
+		f.writelines("G90\n") 
+	f.writelines("G0 X" + str(x_start) + " Y" + str(y_start) + " F2000\n") # Move to x and y-axis start
 	f.writelines("G0 Z" + str(z_start) + " F300\n") ##Move to z-axis position
+	if relative == 0: f.writelines("G91\n")
 	
 	## Print Squares
 	x_grid = 0

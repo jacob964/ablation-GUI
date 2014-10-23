@@ -34,30 +34,29 @@ def initGcodeDir(filename):
     filePath = "{0}/{1} {2}".format(dirPath,timeStr,filename)
     return filePath
 
-def configure(*args):
-    
-    #File 
-    filenameStr = str(filename.get())
-    laserStr    = str(laserPower.get())
-    dwellStr    = str(dwellTime.get())
-    xStr        = str(x_start.get())
-    yStr        = str(y_start.get())
-    zStr        = "{:.1f}".format(110.4 - int(z_dist.get()))
-    pauseStr    = str(500)
-    speedStr    = str(feedRate.get())
-    lengthStr   = str(rectLength.get())
-    widthStr    = str(rectWidth.get())
-    spaceStr    = str(3)
-    hexPackStr  = "{:.3f}".format(float(hexPack.get()))
-    relStr      = str(0)
+def writeConfig(*args):
+    configParam = {
+                   "filenameStr": str(filename.get()),
+                   'gcodeNameStr':str(filename.get()) + ".gcode",
+                   "laserStr":    str(laserPower.get()),
+                   "dwellStr":    str(dwellTime.get()),
+                   "xStr":        str(x_start.get()),
+                   'yStr':        str(y_start.get()),
+                   "zStr":        "{:.1f}".format(110.4 - int(z_dist.get())),
+                   "pauseStr":    str(pauseStr.get()),
+                   "speedStr":    str(feedRate.get()),
+                   "lengthStr":   str(rectLength.get()),
+                   "widthStr":    str(rectWidth.get()),
+                   "spaceStr":    str(3),
+                   "hexPackStr":  "{:.3f}".format(float(hexPack.get())),
+                   "relStr":      str(relative.get()),
+                   }
     
     try:
         f = open("config.py",'w')
     except:
         print("Error-open")
         error.set("Cannot open config.py")
-    
-    gcodeNameStr = filenameStr + ".gcode"
     
     filetext = ("#File\n"
                 "fname = '{0}'\n"
@@ -76,18 +75,25 @@ def configure(*args):
                 "spaceSmall     = {10} #mm; space between rectangles\n"
                 "hexLength      = {11} #mm\n\n"
                 "#Other\n"
-                "relative       = {12} #1 for no starting x,y; 0 for using starting co-ordinates"
-                ).format(gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
+                "relative       = {12} #0 for homing before beginning.  1 if machine has already been homed"
+                ).format(configParam["gcodeNameStr"],
+                         configParam["laserStr"],
+                         configParam["dwellStr"],
+                         configParam["xStr"],
+                         configParam["yStr"],
+                         configParam["zStr"],
+                         configParam["pauseStr"],
+                         configParam["speedStr"],
+                         configParam["lengthStr"],
+                         configParam["widthStr"],
+                         configParam["spaceStr"],
+                         configParam["hexPackStr"],
+                         configParam["relStr"],
+                         )
     f.writelines(filetext)
     f.close()
-
-#     gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr
-#     "test.gcode",2,3,4,5,6.1,7,8,9,10,11,12,0
     
-    import pulse
-    pulse.writeGCODE(gcodeNameStr,laserStr,dwellStr,xStr,yStr,zStr,pauseStr,speedStr,lengthStr,widthStr,spaceStr,hexPackStr,relStr)
-    
-    configPath      = initConfigDir(filenameStr)
+    configPath      = initConfigDir(configParam['filenameStr'])
     f = open("config.py",'r')
     g = open(configPath + "-CONFIG.py",'w')
     for line in f:
@@ -95,26 +101,34 @@ def configure(*args):
     f.close()
     g.close()
     
-    gcodePath       = initGcodeDir(filenameStr)
-    h = open(gcodeNameStr,'r')
+    return configParam
+
+def configure(*args):
+    configParam = writeConfig(args)
+    
+    import pulse
+    pulse.writeGCODE(configParam)
+     
+    gcodePath       = initGcodeDir(configParam['filenameStr'])
+    h = open(configParam['gcodeNameStr'],'r')
     i = open(gcodePath+".gcode",'w')
     for line in h:
         i.writelines(line)
-     
+      
     h.close()
     i.close()
-    
+     
     os.remove("config.py")
-    os.remove(gcodeNameStr)
-
+    os.remove(configParam['gcodeNameStr'])
 
     return
 
 
+#######################################################################################################
+
 # Initialize Root Tk Interface
 root = Tk()
 root.title("Pulsed Ablation - Make GCODE")
-
 
 
 ### Parameter Frame
@@ -207,10 +221,35 @@ ttk.Label(positionFrame, text="mm").grid(column=3, row=6, sticky=(W,E))
 
 
 
+### Options Frame
+# Initialize and configure the options frame
+optFrame = ttk.Frame(root, padding=10)
+optFrame.grid(column=1,row=2,sticky=(W))
+optFrame.columnconfigure(0,weight=4)
+optFrame.rowconfigure(0,weight=5)
+ 
+#Initialize variables in the options frame
+relative = IntVar()
+pauseStr = StringVar()
+ 
+# Title
+ttk.Label(optFrame,text="Options").grid(column=1,row=1,sticky=(W))
+ 
+# Label
+ttk.Label(optFrame, text="Pause between rows:").grid(column=1,row=3,sticky=(W))
+ 
+# Entries
+ttk.Checkbutton(optFrame, text="Home before ablation", variable=relative, onvalue=0, offvalue=1).grid(column=1,row=2,sticky=W)
+rel_entry = ttk.Entry(optFrame,width=5,textvariable=pauseStr)
+rel_entry.grid(column=2,row=3,sticky=W)
+
+
+
+
 ### Filename Frame
 # Initialize and configure the Filename Frame
 fileFrame = ttk.Frame(root, padding=10)
-fileFrame.grid(column=1,row=2,sticky=(N,W))
+fileFrame.grid(column=1,row=3,sticky=(N,W))
 fileFrame.columnconfigure(0, weight=4)
 fileFrame.rowconfigure(0, weight=10)
 
@@ -228,7 +267,7 @@ file_entry.grid(column=2, row=1, sticky=(W))
 ### Make GCODE Button Frame
 # Initialize Frame
 makeFrame = ttk.Frame(root, padding=10)
-makeFrame.grid(column=2,row=2,sticky=(W,E))
+makeFrame.grid(column=2,row=4,sticky=(W,E))
 makeFrame.columnconfigure(0,weight=4)
 makeFrame.rowconfigure(0,weight=10)
 
@@ -240,7 +279,7 @@ ttk.Button(makeFrame, text="Make GCODE", command=configure).grid(column=1, row=1
 ### Make Error Frame
 # Initialize Frame
 errorFrame = ttk.Frame(root, padding=10)
-errorFrame.grid(column=1, row=3, sticky=(W))
+errorFrame.grid(column=1, row=4, sticky=(W))
 errorFrame.columnconfigure(0,weight=4)
 errorFrame.rowconfigure(0,weight=4)
 
