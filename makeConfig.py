@@ -34,10 +34,10 @@ def initGcodeDir(filename):
     filePath = "{0}/{1} {2}".format(dirPath,timeStr,filename)
     return filePath
 
-def writeConfig(*args):
-
-	FOCAL_POINT = 123.4
-	
+def writeConfig(*args):    
+    
+    FOCAL_POINT = 123.4
+    
     configParam = {
                    "filenameStr": str(filename.get()),
                    'gcodeNameStr':str(filename.get()) + ".gcode",
