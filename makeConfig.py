@@ -45,7 +45,7 @@ def writeConfig(*args):
                    "dwellStr":    str(dwellTime.get()),
                    "xStr":        str(x_start.get()),
                    'yStr':        str(y_start.get()),
-                   "zStr":        "{:.1f}".format(FOCAL_POINT - int(z_dist.get())),
+                   "zStr":        "{:.1f}".format(FOCAL_POINT - float(z_dist.get())),
                    "pauseStr":    str(pauseStr.get()),
                    "speedStr":    str(feedRate.get()),
                    "lengthStr":   str(rectLength.get()),

@@ -72,7 +72,7 @@ def guiGlobVars(kvarg):
 	relative   	= int(kvarg['relStr'])	
 
 def gcode_move(x_move, y_move):
-	f.writelines("G0 X" + str(x_move) + " Y" + str(y_move) + " F2000\n")
+	f.writelines("G0 X" + str(x_move) + " Y" + str(y_move) + " F1000\n")
 	f.writelines("G4 P" + str(pauseTime) + "\n")
 
 def gcode_rectangle(dwellTime, laserPower):
@@ -105,14 +105,14 @@ def writeGCODE(kvarg):
 	
 	f.writelines("M3 S0\n") ## Laser Off
 	
-	
-	if relative == 1: 
+	if relative == 0: 
 		f.writelines("G28\n") ## Home axes.
-	else: 
+	else:
+		f.writelines("M3 S0\n") ## Laser Off
 		f.writelines("G90\n") 
 	f.writelines("G0 X" + str(x_start) + " Y" + str(y_start) + " F2000\n") # Move to x and y-axis start
 	f.writelines("G0 Z" + str(z_start) + " F300\n") ##Move to z-axis position
-	if relative == 0: f.writelines("G91\n")
+	if relative == 1: f.writelines("G91\n")
 	
 	## Print Squares
 	x_grid = 0
