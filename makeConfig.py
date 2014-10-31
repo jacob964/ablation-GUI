@@ -36,7 +36,7 @@ def initGcodeDir(filename):
 
 def writeConfig(*args):    
     
-    FOCAL_POINT = 125.25
+    FOCAL_POINT = 123.85
     
     configParam = {
                    "filenameStr": str(filename.get()),
@@ -45,7 +45,7 @@ def writeConfig(*args):
                    "dwellStr":    str(dwellTime.get()),
                    "xStr":        str(x_start.get()),
                    'yStr':        str(y_start.get()),
-                   "zStr":        "{:.1f}".format(FOCAL_POINT - float(z_dist.get())),
+                   "zStr":        "{:.2f}".format(FOCAL_POINT - float(z_dist.get())),
                    "pauseStr":    str(pauseStr.get()),
                    "speedStr":    str(feedRate.get()),
                    "lengthStr":   str(rectLength.get()),

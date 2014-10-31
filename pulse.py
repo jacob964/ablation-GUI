@@ -43,7 +43,7 @@ def guiGlobVars(kvarg):
 	global laserPower
 	laserPower 		= float(kvarg['laserStr'])
 	global dwellTime
-	dwellTime     	= float(kvarg['dwellStr'])
+	dwellTime     	= int(kvarg['dwellStr'])
 	global x_start
 	x_start			= int(kvarg['xStr'])
 	global y_start
@@ -82,6 +82,7 @@ def gcode_rectangle(dwellTime, laserPower):
 	
 	while y_total < rectWidth:
 		f.writelines("G1 X" + str(-1*rectLength) + " S" + str(laserPower) + " L" + str(dwellTime*1000) + " P" + str(1/x_dist) + " F" + str(feedRate) + " B1\n") 
+		#f.writelines("M3 S0\n")
 		x_total -= rectLength
 		
 		x_overhang = flag * x_dist/2
@@ -108,8 +109,8 @@ def writeGCODE(kvarg):
 	if relative == 0: 
 		f.writelines("G28\n") ## Home axes.
 	else:
+		f.writelines("G90\n")
 		f.writelines("M3 S0\n") ## Laser Off
-		f.writelines("G90\n") 
 	f.writelines("G0 X" + str(x_start) + " Y" + str(y_start) + " F2000\n") # Move to x and y-axis start
 	f.writelines("G0 Z" + str(z_start) + " F300\n") ##Move to z-axis position
 	if relative == 1: f.writelines("G91\n")
