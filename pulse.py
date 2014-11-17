@@ -31,6 +31,11 @@ def hex_pattern(hex_pack):
 	global y_dist
 	y_dist = float("{:.3f}".format(hex_pack * (3**0.5) / 2))
 	return
+	
+def formatFloat(fl):
+	fl = float(fl)
+	fl = float("{:.3f}".format(fl))
+	return fl
 
 def guiGlobVars(kvarg):
 	#File
@@ -72,6 +77,8 @@ def guiGlobVars(kvarg):
 	relative   	= int(kvarg['relStr'])	
 
 def gcode_move(x_move, y_move):
+	x_move = formatFloat(x_move)
+	y_move = formatFloat(y_move)
 	f.writelines("G0 X" + str(x_move) + " Y" + str(y_move) + " F1000\n")
 	f.writelines("G4 P" + str(pauseTime) + "\n")
 
@@ -79,9 +86,9 @@ def gcode_rectangle(dwellTime, laserPower):
 	x_total = 0
 	y_total = 0
 	flag = -1
-	
+	pulseDist = formatFloat(1/x_dist)
 	while y_total < rectWidth:
-		f.writelines("G1 X" + str(-1*rectLength) + " S" + str(laserPower) + " L" + str(dwellTime*1000) + " P" + str(1/x_dist) + " F" + str(feedRate) + " B1\n") 
+		f.writelines("G1 X" + str(-1*rectLength) + " S" + str(laserPower) + " L" + str(dwellTime*1000) + " P" + str(pulseDist) + " F" + str(feedRate) + " B1\n") 
 		#f.writelines("M3 S0\n")
 		x_total -= rectLength
 		
