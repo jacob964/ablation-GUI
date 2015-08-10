@@ -53,6 +53,7 @@ def writeConfig(*args):
                    "spaceStr":    str(3),
                    "hexPackStr":  "{:.3f}".format(float(hexPack.get())),
                    "relStr":      str(relative.get()),
+				   "cleanStr":	  str(clean.get())	
                    }
     
     try:
@@ -78,7 +79,8 @@ def writeConfig(*args):
                 "spaceSmall     = {10} #mm; space between rectangles\n"
                 "hexLength      = {11} #mm\n\n"
                 "#Other\n"
-                "relative       = {12} #0 for homing before beginning.  1 if machine has already been homed"
+                "relative       = {12} #0 for homing before beginning.  1 if machine has already been homed\n"
+				"cleanTrigger	= {13} #number of rows between laser head cleanings"
                 ).format(configParam["gcodeNameStr"],
                          configParam["laserStr"],
                          configParam["dwellStr"],
@@ -92,6 +94,7 @@ def writeConfig(*args):
                          configParam["spaceStr"],
                          configParam["hexPackStr"],
                          configParam["relStr"],
+						 configParam["cleanStr"]
                          )
     f.writelines(filetext)
     f.close()
@@ -234,17 +237,21 @@ optFrame.rowconfigure(0,weight=5)
 #Initialize variables in the options frame
 relative = IntVar()
 pauseStr = StringVar()
+clean = StringVar()
  
 # Title
 ttk.Label(optFrame,text="Options").grid(column=1,row=1,sticky=(W))
  
 # Label
 ttk.Label(optFrame, text="Pause between rows:").grid(column=1,row=3,sticky=(W))
+ttk.Label(optFrame, text="Clean Trigger:").grid(column=1,row=4,sticky=(W))
  
 # Entries
 ttk.Checkbutton(optFrame, text="Home before ablation", variable=relative, onvalue=0, offvalue=1).grid(column=1,row=2,sticky=W)
 rel_entry = ttk.Entry(optFrame,width=5,textvariable=pauseStr)
 rel_entry.grid(column=2,row=3,sticky=W)
+clean_entry = ttk.Entry(optFrame,width=5,textvariable=clean)
+clean_entry.grid(column=2,row=4,sticky=W)
 
 
 

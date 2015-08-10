@@ -27,7 +27,7 @@ relative   	= config.relative
 y_brush_top = 335
 y_brush_dist = 80
 x_brush = 232
-cleanTrigger = 10
+cleanTrigger = config.cleanTrigger
 
 x_current = x_start
 y_current = y_start
@@ -98,6 +98,8 @@ def guiGlobVars(kvarg):
 	# Other Parameters
 	global relative
 	relative   	= int(kvarg['relStr'])	
+	global cleanTrigger
+	cleanTrigger= int(kvarg['cleanStr'])
 
 def gcode_move(x_move, y_move):
 	x_move = formatFloat(x_move)
@@ -108,8 +110,8 @@ def gcode_move(x_move, y_move):
 	currentY(y_move)
 
 def cleanLaserHead():
-	x_initial = currentX(0)
-	y_initial = currentY(0)
+	x_initial = formatFloat(currentX(0))
+	y_initial = formatFloat(currentY(0))
 	
 	f.writelines("\n;; Cleaning\n\n")
 	f.writelines("M3 S0\n")
@@ -129,7 +131,6 @@ def cleanLaserHead():
 	
 	
 def gcode_rectangle(dwellTime, laserPower):
-	x_total = 0
 	y_total = 0
 	flag = -1
 	pulseDist = formatFloat(1/x_dist)
@@ -139,7 +140,6 @@ def gcode_rectangle(dwellTime, laserPower):
 	while y_total < rectWidth:
 		f.writelines("G1 X" + str(-1*rectLength) + " S" + str(laserPower) + " L" + str(dwellTime*1000) + " P" + str(pulseDist) + " F" + str(feedRate) + " B1\n") 
 		currentX(-1*rectLength)
-		x_total -= rectLength
 		
 		cleanCount += 1
 		if cleanCount == cleanTrigger:
@@ -148,14 +148,10 @@ def gcode_rectangle(dwellTime, laserPower):
 		
 		x_overhang = flag * x_dist/2
 		gcode_move(rectLength + x_overhang, -1*y_dist)
-		x_total += rectLength + x_overhang
 		
 		y_total += y_dist
-		flag *= -1
-		
-		
-	totals = [x_total, y_total]
-	return totals
+		flag *= -1	
+	return 
 	
 
 def writeGCODE(kvarg):
@@ -174,29 +170,18 @@ def writeGCODE(kvarg):
 		f.writelines("M3 S0\n") ## Laser Off
 	f.writelines("G0 X" + str(x_start) + " Y" + str(y_start) + " F2000\n") # Move to x and y-axis start
 	f.writelines("G0 Z" + str(z_start) + " F300\n") ##Move to z-axis position
-	if relative == 1: f.writelines("G91\n")
+	if relative == 1: 
+		f.writelines("G91\n")
 	
-	## Print Squares
-	x_grid = 0
-	y_grid = 0
-		
-	x_move = 0
-	y_move = 0
+	x_current = currentX(0)
+	y_current = currentY(0)
+	currentX(-1*x_current+x_start)
+	currentY(-1*y_current+y_start)
 	
-	gcode_move(x_move, y_move)
-	
-	totals = gcode_rectangle(dwellTime, laserPower)
-	x_move = totals[0] - rectLength - spaceSmall 
-	y_move = totals[1]
-	
-	x_grid += rectLength + spaceSmall
-	
-	gcode_move(x_move + x_grid, y_move - rectWidth - spaceSmall)
-	x_grid = 0
-	y_grid += rectWidth + spaceSmall
+	## Print Square
+	gcode_rectangle(dwellTime, laserPower)
 
 	cleanLaserHead()	
-	
 	writefile.closefile(f)
 
 def main():
