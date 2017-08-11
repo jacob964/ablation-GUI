@@ -36,7 +36,7 @@ def initGcodeDir(filename):
 
 def writeConfig(*args):    
     
-    FOCAL_POINT = 124.1
+    FOCAL_POINT = 122.5
     
     configParam = {
                    "filenameStr": str(filename.get()),
